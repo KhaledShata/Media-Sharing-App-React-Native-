@@ -28,9 +28,9 @@ const App = () =>{
       console.log("HIIII");
       const file = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
-        allowsEditing: true,
+        allowsEditing: false, //disable crop after selecting photo
         quality: 0.9,
-        base64: true,
+        base64: false,
       });
       console.log(file.assets[0]);
       const formData = new FormData();
@@ -39,14 +39,18 @@ const App = () =>{
         type:file.assets[0].mimeType,
         name:file.assets[0].fileName,
       })
+      console.log("URI" , file.assets[0].uri)
+      console.log("URI" , file.assets[0].mimeType)
+      console.log("URI" , file.assets[0].fileName)
+
       let res = await fetch(
         'http://192.168.100.4:3001/upload', 
         {
           method :'post', 
           body:formData, 
-          headers:{
-          'Content-Type': 'multipart/form-data',
-          },
+          // headers:{
+          // 'Content-Type': 'multipart/form-data',
+          // },
         }
       );
       let responsejson = await res.json();
