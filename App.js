@@ -13,7 +13,7 @@ const options = {
   title: 'Select Image',
   type:'Library', 
   options:{
-    mediaType: 'mixed',
+    mediaType: 'all',
     selectionLimit: 1,
     includeBase64: false,
     
@@ -26,7 +26,12 @@ const App = () =>{
 
     const handleUpload=async()=>{
       console.log("HIIII");
-      const file = await ImagePicker.launchImageLibraryAsync(options);
+      const file = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        quality: 0.9,
+        base64: true,
+      });
       console.log(file.assets[0]);
       const formData = new FormData();
       formData.append('file', {
