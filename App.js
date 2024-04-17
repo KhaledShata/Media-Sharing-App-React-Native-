@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from "react";
 import axios from 'axios';
-import {  StyleSheet,  Text,  View,  Button,ScrollView,Image, SafeAreaView} from "react-native";
+import {  StyleSheet,  Text,  View,  Button,ScrollView,Image, SafeAreaView,TextInput} from "react-native";
 import {launchImageLibrary} from 'react-native-image-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { Video } from 'expo-av'; 
@@ -84,7 +84,13 @@ const App = () =>{
               source={{ uri: fileSource }}
               style={styles.image}
             />
-            <Text style={styles.fileInfo}>{file.numberofLikes || 0} Likes</Text>
+            <Text style={styles.fileInfo}>{file.numberOfLikes} Likes</Text>
+            <View style={styles.buttonContainer}>
+              <Button title="Like" onPress={() => handleLike(file._id)} />
+              <Button title="Unlike" onPress={() => handleunLike(file._id)} />
+              
+            </View>
+
           </View>
         );
       } else if (fileType === 'video') {
@@ -99,12 +105,42 @@ const App = () =>{
               resizeMode="contain"
               isLooping
             />
-            <Text style={styles.fileInfo}>Likes: {file.numberOfLikes}</Text>
+            <Text style={styles.fileInfo}>{file.numberOfLikes} Likes</Text>
+            <View style={styles.buttonContainer}>
+              <Button title="Like" onPress={() => handleLike(file._id)} />
+              <Button title="Unlike" onPress={() => handleunLike(file._id)} />
+            </View>
           </View>
         );
       }
     };
+    const handleLike = async(fileId) => {
+      let res = await fetch(`http://192.168.100.4:3001/files/like/${fileId}`,{ method :'get', }      );
+      console.log("LIKE")
+      // axios.get(`http://192.168.100.4:3001/files/like/${fileId}`)
+      // .then(() => {
+      //   fetchFiles(); 
+      //   console.log(fileId);
+      // })
+      // .catch(err => console.log(err));
+    };
+  
+    const handleunLike = (fileId) => {
+      axios.post(`http://192.168.100.4:3001/files/unlike/${fileId}`)
+      .then(() => {
+        fetchFiles(); 
+        console.log(fileId);
+      })
+      .catch(err => console.log(err));
+    };
 
+    const handleDelete = (fileId) => {
+      axios.delete(`http://localhost:3001/files/${fileId}`)
+      .then(() => {
+        fetchFiles(); 
+      })
+      .catch(err => console.log(err));
+    };
   
     return (
       <View style={styles.container}>
@@ -167,5 +203,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 8,
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 10,
+  }
 });
 export default App;
