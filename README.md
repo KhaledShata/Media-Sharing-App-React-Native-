@@ -21,6 +21,10 @@ https://github.com/KhaledShata/Media-Sharing-App-React-Native-/assets/105244576/
 
 
 
+https://github.com/KhaledShata/Media-Sharing-App-React-Native-/assets/105244576/2236d10d-e416-475f-8990-a70c083fac11
+
+
+
 
 
 This React Native project is a media sharing application designed for managing and displaying multimedia files, such as images and videos, on mobile platforms. 
