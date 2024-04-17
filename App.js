@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from "react";
 import axios from 'axios';
-import {  StyleSheet,  Text,  View,  Button,ScrollView,Image} from "react-native";
+import {  StyleSheet,  Text,  View,  Button,ScrollView,Image, SafeAreaView} from "react-native";
 import {launchImageLibrary} from 'react-native-image-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { Video } from 'expo-av'; 
@@ -84,7 +84,7 @@ const App = () =>{
               source={{ uri: fileSource }}
               style={styles.image}
             />
-            <Text style={styles.fileInfo}>{file.numberofLikes} Likes</Text>
+            <Text style={styles.fileInfo}>{file.numberofLikes || 0} Likes</Text>
           </View>
         );
       } else if (fileType === 'video') {
@@ -99,7 +99,7 @@ const App = () =>{
               resizeMode="contain"
               isLooping
             />
-            <Text style={styles.fileInfo}>{file.numberofLikes} Likes</Text>
+            <Text style={styles.fileInfo}>Likes: {file.numberOfLikes}</Text>
           </View>
         );
       }
@@ -108,7 +108,7 @@ const App = () =>{
   
     return (
       <View style={styles.container}>
-        <Text>Media Sharing Platform</Text>
+        <Text style={styles.header}>Media Sharing Platform</Text>
         <Button title="Upload" onPress={handleUpload} />
 
       <ScrollView style={styles.filesList}>
@@ -125,10 +125,22 @@ const App = () =>{
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 5,
+    backgroundColor: '#f0f0f0'  // Optional: change the background color of the safe area
+  },
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    marginTop: 20, 
+    color: '#000', 
+    textAlign: 'center',  
   },
   fileContainer: {
     justifyContent: 'center',
