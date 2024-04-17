@@ -86,9 +86,9 @@ const App = () =>{
             />
             <Text style={styles.fileInfo}>{file.numberOfLikes} Likes</Text>
             <View style={styles.buttonContainer}>
-              <Button title="Like" onPress={() => handleLike(file._id)} />
+              <Button title="Like"   onPress={() => handleLike(file._id)} />
               <Button title="Unlike" onPress={() => handleunLike(file._id)} />
-              
+              <Button title="Delete" onPress={() => handleDelete(file._id)} color="red" />
             </View>
 
           </View>
@@ -114,15 +114,14 @@ const App = () =>{
         );
       }
     };
-    const handleLike = async(fileId) => {
-      let res = await fetch(`http://192.168.100.4:3001/files/like/${fileId}`,{ method :'get', }      );
-      console.log("LIKE")
-      // axios.get(`http://192.168.100.4:3001/files/like/${fileId}`)
-      // .then(() => {
-      //   fetchFiles(); 
-      //   console.log(fileId);
-      // })
-      // .catch(err => console.log(err));
+    const handleLike = (fileId) => {
+      // let res = await fetch(`http://192.168.100.4:3001/files/like/${fileId}`,{ method :'get', }      );
+      axios.get(`http://192.168.100.4:3001/files/like/${fileId}`)
+      .then(() => {
+        fetchFiles(); 
+        console.log(fileId);
+      })
+      .catch(err => console.log(err));
     };
   
     const handleunLike = (fileId) => {
@@ -135,9 +134,11 @@ const App = () =>{
     };
 
     const handleDelete = (fileId) => {
-      axios.delete(`http://localhost:3001/files/${fileId}`)
+      axios.delete(`http://192.168.100.4:3001/files/${fileId}`)
       .then(() => {
+        console.log("Deleted")
         fetchFiles(); 
+        
       })
       .catch(err => console.log(err));
     };
