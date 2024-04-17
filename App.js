@@ -8,6 +8,8 @@ import { Video } from 'expo-av';
 
 const App = () =>{
   const [filesList, setFilesList] = useState([]);
+  const [updateFile, setUpdateFile] = useState(null); 
+
     useEffect(() => {
       fetchFiles(); 
     }, []); 
@@ -31,7 +33,7 @@ const App = () =>{
       console.log("Name" , file.assets[0].fileName)
 
       let res = await fetch(
-        'http://192.168.100.4:3001/upload', //local host raise connection failed
+        'http://192.168.100.4:3001/upload', //localhost raise connection failed
         {
           method :'post', 
           body:formData, 
@@ -40,13 +42,47 @@ const App = () =>{
           
           },
         }
-      );
-      let responsejson = await res.json();
-      console.log("RESPONSE IS " ,responsejson);
-      console.log("UPLOAD DONE");
+      )
+      .then(() => {
+        fetchFiles(); 
+      })
+      // let responsejson = await res.json();
+      // console.log("RESPONSE IS " ,responsejson);
+      // console.log("UPLOAD DONE");
 
     }
+    const handleFileUpdate = async (fileId) => {
+      const file = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: false,
+        quality: 0.9,
+        base64: false,
+      });
+    
+      if (file.cancelled) {
+        console.log('File selection was cancelled.');
+        return;
+      }
+    
+      const formData = new FormData();
+      formData.append('file', {
+        uri:file.assets[0].uri,
+        type:file.assets[0].mimeType,
+        name:file.assets[0].fileName,
+      })
 
+      axios.put(`http://192.168.100.4:3001/files/${fileId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .then(() => {
+        console.log("File updated successfully.");
+        fetchFiles(); 
+      })
+      .catch(err => console.log('Error updating file:', err));
+    };
+    
     const fetchFiles = () => {
       axios.get('http://192.168.100.4:3001/files')
         .then(res => {
@@ -71,6 +107,33 @@ const App = () =>{
         })
         .catch(err => console.error('Error fetching files:', err)); 
     };
+    
+    const handleLike = (fileId) => {
+      axios.get(`http://192.168.100.4:3001/files/like/${fileId}`)
+      .then(() => {
+        fetchFiles(); 
+        console.log(fileId);
+      })
+      .catch(err => console.log(err));
+    };
+    const handleunLike = (fileId) => {
+      axios.get(`http://192.168.100.4:3001/files/unlike/${fileId}`)
+      .then(() => {
+        fetchFiles(); 
+        console.log(fileId);
+      })
+      .catch(err => console.log(err));
+    };
+
+    const handleDelete = (fileId) => {
+      axios.delete(`http://192.168.100.4:3001/files/${fileId}`)
+      .then(() => {
+        console.log("Deleted")
+        fetchFiles(); 
+        
+      })
+      .catch(err => console.log(err));
+    };
     const renderFile = (file) => {
       const fileType = file.contentType.split('/')[0]; 
       const fileSource = `http://192.168.100.4:3001/files/view/${file._id}?cb=${new Date().getTime()}`;
@@ -89,6 +152,8 @@ const App = () =>{
               <Button title="Like"   onPress={() => handleLike(file._id)} />
               <Button title="Unlike" onPress={() => handleunLike(file._id)} />
               <Button title="Delete" onPress={() => handleDelete(file._id)} color="red" />
+              <Button title="Update" onPress={() => handleFileUpdate(file._id)} color="green" />
+
             </View>
 
           </View>
@@ -109,38 +174,12 @@ const App = () =>{
             <View style={styles.buttonContainer}>
               <Button title="Like" onPress={() => handleLike(file._id)} />
               <Button title="Unlike" onPress={() => handleunLike(file._id)} />
+              <Button title="Delete" onPress={() => handleDelete(file._id)} color="red" />
+              <Button title="Update" onPress={() => handleFileUpdate(file._id)} color="green" />
             </View>
           </View>
         );
       }
-    };
-    const handleLike = (fileId) => {
-      // let res = await fetch(`http://192.168.100.4:3001/files/like/${fileId}`,{ method :'get', }      );
-      axios.get(`http://192.168.100.4:3001/files/like/${fileId}`)
-      .then(() => {
-        fetchFiles(); 
-        console.log(fileId);
-      })
-      .catch(err => console.log(err));
-    };
-  
-    const handleunLike = (fileId) => {
-      axios.post(`http://192.168.100.4:3001/files/unlike/${fileId}`)
-      .then(() => {
-        fetchFiles(); 
-        console.log(fileId);
-      })
-      .catch(err => console.log(err));
-    };
-
-    const handleDelete = (fileId) => {
-      axios.delete(`http://192.168.100.4:3001/files/${fileId}`)
-      .then(() => {
-        console.log("Deleted")
-        fetchFiles(); 
-        
-      })
-      .catch(err => console.log(err));
     };
   
     return (
@@ -164,7 +203,7 @@ const App = () =>{
 const styles = StyleSheet.create({
   safeArea: {
     flex: 5,
-    backgroundColor: '#f0f0f0'  // Optional: change the background color of the safe area
+    backgroundColor: '#f0f0f0'
   },
   container: {
     flex: 1,
